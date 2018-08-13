@@ -7,8 +7,8 @@ public class RootSegment : DestructableBehaviour
 {
 	public List<Transform> Forms;
 	public float BreakForce = 5f;
-	public float Mass = 1f;
-	public float StartVelocity;
+	public float Density = 1f;
+	public Vector3 StartVelocity;
 	private Rigidbody body;
 
 	// Use this for initialization
@@ -25,7 +25,8 @@ public class RootSegment : DestructableBehaviour
 	{
 		yield return new WaitForEndOfFrame();
 		CalculateBodyStuff();
-		body.velocity = new Vector3(Random.Range(-1f, 1f), Random.Range(-1f, 1f), Random.Range(-1f, 1f)) * StartVelocity;
+		//Debug.Log(StartVelocity / body.mass);
+		body.velocity = Random.Range(.005f,.01f) * StartVelocity / body.mass;//(new Vector3(Random.Range(-1f, 1f), Random.Range(-1f, 1f), Random.Range(-1f, 1f)) * StartVelocity) / Mathf.Max(.8f,body.mass);
 	}
 
 	public override void TakeDamage(float damage, Collision col)
@@ -35,7 +36,8 @@ public class RootSegment : DestructableBehaviour
 	public void CalculateBodyStuff()
 	{
 		body.ResetCenterOfMass();
-		body.SetDensity(Mass);
+		body.SetDensity(Density);
+		body.mass = body.mass;
 	}
 
 	public void GetNearest(Vector3 v, float force, int pieces)
@@ -58,7 +60,7 @@ public class RootSegment : DestructableBehaviour
 			Forms.RemoveAt(0);
 			RootSegment rs = l[i].gameObject.AddComponent<RootSegment>();
 			rs.BreakForce = BreakForce;
-			rs.StartVelocity = force * .2f;
+			rs.StartVelocity =(l[i].position - v).normalized * force; //force * .2f;
 		}
 		//List<Transform> subList = new List<Transform>();
 		//subList.AddRange(Forms.GetRange(maxN, Forms.Count - maxN));

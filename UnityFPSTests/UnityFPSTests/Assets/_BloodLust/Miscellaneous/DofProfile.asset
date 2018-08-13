@@ -37,7 +37,7 @@ MonoBehaviour:
     value: 1
   focusDistance:
     overrideState: 1
-    value: 73.86141
+    value: 61.323654
   aperture:
     overrideState: 1
     value: 7.999998
@@ -46,7 +46,7 @@ MonoBehaviour:
     value: 53
   kernelSize:
     overrideState: 1
-    value: 1
+    value: 0
 --- !u!114 &114077502350209104
 MonoBehaviour:
   m_ObjectHideFlags: 3

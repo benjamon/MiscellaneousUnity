@@ -31,7 +31,7 @@ public class BadParentingTree : MonoBehaviour
 		_forms[0].parent = null;
 		RootSegment rs = _forms[0].gameObject.AddComponent<RootSegment>();
 		rs.BreakForce = BreakForce;
-		rs.Mass = Mass;
+		rs.Density = Mass;
 		_forms.RemoveAt(0);
 		rs.Forms = _forms;
 		foreach (BreakABranch branch in Branches)
