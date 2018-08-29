@@ -6,6 +6,7 @@ using UnityEngine;
 public class PaintableObject : MonoBehaviour
 {
 	public MeshRenderer Dish;
+	public GameObject Grime;
 	private Texture2D _grimeMap;
 	private Camera _camera;
 	private Color[] _brushColors;
@@ -49,7 +50,7 @@ public class PaintableObject : MonoBehaviour
 	public void ApplyGrime()
 	{
 		Collider c = Dish.GetComponent<Collider>();
-		for (int i = 0; i < 48; i++)
+		for (int i = 0; i < 56; i++)
 		{
 			Vector3 v = new Vector3(Random.Range(-1f, 1f), Random.Range(-1f, 1f), Random.Range(-1f, 1f)).normalized;
 			Ray r = new Ray(c.transform.position + v, -v + new Vector3(Random.Range(-1f, 1f), Random.Range(-1f, 1f), Random.Range(-1f, 1f)).normalized * .12f);
@@ -57,17 +58,20 @@ public class PaintableObject : MonoBehaviour
 			if (c.Raycast(r, out rch, 3f))
 			{
 				DrawOnTexture(rch.textureCoord, .75f);
+				//Transform t = Instantiate(Grime, rch.point, Quaternion.identity).transform;
+				//t.forward = rch.normal;
+				//t.parent = transform;
 			}
 		}
 		_grimeMap.Apply();
 	}
 
-	public void CleanTexture(Vector2 pixPosition, float maskMult)
+	public void CleanTexture(Vector2 pixPosition, float maskMult , int brushSize)
 	{
-		int x = Mathf.Max(Mathf.FloorToInt(_grimeMap.width * pixPosition.x) - _brushSize / 2, 0);
-		int y = Mathf.Max(Mathf.FloorToInt(_grimeMap.height * pixPosition.y) - _brushSize / 2, 0);
-		int endX = Mathf.Min(_imageSize - x, _brushSize);
-		int endY = Mathf.Min(_imageSize - y, _brushSize);
+		int x = Mathf.Max(Mathf.FloorToInt(_grimeMap.width * pixPosition.x) - brushSize / 2, 0);
+		int y = Mathf.Max(Mathf.FloorToInt(_grimeMap.height * pixPosition.y) - brushSize / 2, 0);
+		int endX = Mathf.Min(_imageSize - x, brushSize);
+		int endY = Mathf.Min(_imageSize - y, brushSize);
 		Color[] pixels =
 			_grimeMap.GetPixels(x, y, endX, endY);
 		for (int n = 0; n < pixels.Length; n++)
@@ -107,7 +111,55 @@ public class PaintableObject : MonoBehaviour
 	void Update ()
 	{
 		DebugText.text = $"Touch Count: {Input.touchCount} ";
-#if UNITY_EDITOR
+//#if UNITY_EDITOR
+//		MouseSponge();
+//		return;
+//#endif
+		//TouchSponges();
+
+		_grimeMap.Apply();
+
+		DebugText.text += $"\n({Mathf.RoundToInt(CalculatePerecentage() * 100f)}%)";
+	}
+
+	public void CleanRay(Ray r, float strength, int brushSize)
+	{
+		RaycastHit rch = new RaycastHit();
+		if (Physics.Raycast(r, out rch))
+		{
+			if (rch.transform == transform)
+			{
+				TryBubl(rch.point);
+				CleanTexture(rch.textureCoord, strength, brushSize);
+			}
+		}
+	}
+
+	void TouchSponges()
+	{
+		for (int t = 0; t < Input.touchCount; t++)
+		{
+			Vector3 touchPosition = Input.GetTouch(t).position;
+			DebugText.text += $"\nTouch {t}: {touchPosition}";
+			if (Input.GetTouch(t).phase == TouchPhase.Began)
+			{
+				_touchHistory[t] = touchPosition;
+			}
+			if (Input.GetTouch(t).phase <= TouchPhase.Moved)
+			{
+				float mag = (_touchHistory[t] - touchPosition).magnitude;
+				for (int i = 0; i < mag - 1f; i += _brushSize / 4)
+				{
+					CleanRay(_camera.ScreenPointToRay(Vector3.Lerp(_touchHistory[t], touchPosition, i / mag)), .96f, _brushSize);
+				}
+				CleanRay(_camera.ScreenPointToRay(touchPosition), .96f, _brushSize);
+				_touchHistory[t] = touchPosition;
+			}
+		}
+	}
+
+	void MouseSponge()
+	{
 		Vector3 mousePosition = Input.mousePosition;
 		if (Input.GetMouseButtonDown(0))
 		{
@@ -119,65 +171,11 @@ public class PaintableObject : MonoBehaviour
 			float mag = (_touchHistory[0] - mousePosition).magnitude;
 			for (int i = 0; i < mag - 1f; i += _brushSize / 4)
 			{
-				if (Physics.Raycast(_camera.ScreenPointToRay(Vector3.Lerp(_touchHistory[0], mousePosition, i / mag)), out rch))
-				{
-					if (rch.transform == transform)
-					{
-						TryBubl(rch.point);
-						CleanTexture(rch.textureCoord, .96f);
-					}
-				}
+				CleanRay(_camera.ScreenPointToRay(Vector3.Lerp(_touchHistory[0], mousePosition, i / mag)), .96f, _brushSize);
 			}
-			if (Physics.Raycast(_camera.ScreenPointToRay(mousePosition), out rch))
-			{
-				if (rch.transform == transform)
-				{
-					TryBubl(rch.point);
-					CleanTexture(rch.textureCoord, .96f);
-				}
-			}
+			CleanRay(_camera.ScreenPointToRay(mousePosition), .96f, _brushSize);
 			_touchHistory[0] = mousePosition;
 		}
-		_grimeMap.Apply();
-
-		DebugText.text += $"\n({Mathf.RoundToInt(CalculatePerecentage() * 100f)}%)";
-		return;
-#endif
-		for (int t = 0; t < Input.touchCount; t++)
-		{
-			Vector3 touchPosition = Input.GetTouch(t).position;
-			DebugText.text += $"\nTouch {t}: {touchPosition}";
-			if (Input.GetTouch(t).phase == TouchPhase.Began)
-			{
-				_touchHistory[t] = touchPosition;
-			}
-			if (Input.GetTouch(t).phase <= TouchPhase.Moved)
-			{
-				RaycastHit rch = new RaycastHit();
-				float mag = (_touchHistory[t] - touchPosition).magnitude;
-				for (int i = 0; i < mag - 1f; i += _brushSize / 4)
-				{
-					if (Physics.Raycast(_camera.ScreenPointToRay(Vector3.Lerp(_touchHistory[t], touchPosition, i / mag)), out rch))
-					{
-						if (rch.transform == transform)
-						{
-							TryBubl(rch.point);
-							CleanTexture(rch.textureCoord, .96f);
-						}
-					}
-				}
-				if (Physics.Raycast(_camera.ScreenPointToRay(touchPosition), out rch))
-				{
-					if (rch.transform == transform)
-					{
-						TryBubl(rch.point);
-						CleanTexture(rch.textureCoord, .96f);
-					}
-				}
-				_touchHistory[t] = touchPosition;
-			}
-		}
-
 		_grimeMap.Apply();
 
 		DebugText.text += $"\n({Mathf.RoundToInt(CalculatePerecentage() * 100f)}%)";
