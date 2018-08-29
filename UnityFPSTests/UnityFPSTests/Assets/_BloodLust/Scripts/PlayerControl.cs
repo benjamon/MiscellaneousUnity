@@ -20,7 +20,7 @@ public class PlayerControl : MonoBehaviour
 	private Camera _cam;
 	private Rigidbody _rig;
 	private float cDof, initFov;
-	public bool _grounded;
+	private bool _grounded, _boosting;
 
 	// Use this for initialization
 	void OnEnable () {

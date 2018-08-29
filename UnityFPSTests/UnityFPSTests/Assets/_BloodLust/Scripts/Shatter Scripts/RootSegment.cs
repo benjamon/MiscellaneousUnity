@@ -26,7 +26,8 @@ public class RootSegment : DestructableBehaviour
 		yield return new WaitForEndOfFrame();
 		CalculateBodyStuff();
 		//Debug.Log(StartVelocity / body.mass);
-		body.velocity = Random.Range(.005f,.01f) * StartVelocity / body.mass;//(new Vector3(Random.Range(-1f, 1f), Random.Range(-1f, 1f), Random.Range(-1f, 1f)) * StartVelocity) / Mathf.Max(.8f,body.mass);
+		//body.velocity = Random.Range(.005f,.01f) * StartVelocity / body.mass;//
+		body.velocity = new Vector3(Random.Range(-1f, 1f), Random.Range(-1f, 1f), Random.Range(-1f, 1f));
 	}
 
 	public override void TakeDamage(float damage, Collision col)
@@ -51,6 +52,8 @@ public class RootSegment : DestructableBehaviour
 		int maxN = 0;
 		maxN += Mathf.Max(Forms.FindIndex(x => x == l[0]), maxN);
 
+		ParticleMan.Emit(4, Random.Range(0,(int)(force/10f)), v, Vector3.up);
+
 
 		for (int i = 0; i < pieces && i < l.Count; i++)
 		{
@@ -60,8 +63,9 @@ public class RootSegment : DestructableBehaviour
 			Forms.RemoveAt(0);
 			RootSegment rs = l[i].gameObject.AddComponent<RootSegment>();
 			rs.BreakForce = BreakForce;
-			rs.StartVelocity =(l[i].position - v).normalized * force; //force * .2f;
+			rs.StartVelocity = (l[i].position - v).normalized * Mathf.Clamp(force, 0f, 1f);
 		}
+
 		//List<Transform> subList = new List<Transform>();
 		//subList.AddRange(Forms.GetRange(maxN, Forms.Count - maxN));
 		//rs.Forms = subList;
@@ -82,8 +86,8 @@ public class RootSegment : DestructableBehaviour
 		{
 			if (col.contacts[0].thisCollider.gameObject.name != name)
 			{
-				GetNearest(col.contacts[0].point, col.impulse.magnitude, col.transform.CompareTag("Bullet") ? 5 : 1);
-				ParticleMan.Emit(3, 10, col.contacts[0].point, Vector3.up);
+				GetNearest(col.contacts[0].point, col.impulse.magnitude, col.transform.CompareTag("Bullet") ? 8 : 1);
+				//ParticleMan.Emit(3, 10, col.contacts[0].point, Vector3.up);
 			}
 		}
 	}

@@ -17,7 +17,7 @@ public class BulletScript : MonoBehaviour
 		_rb = GetComponent<Rigidbody>();
 		_lr = GetComponent<TrailRenderer>();
 		float f = Time.time;
-		while (Time.time - f < 5f)
+		while (Time.time - f <  1.4f)
 		{
 			_lr.widthMultiplier = _lr.widthMultiplier * .95f;
 			p.range *= .97f;
@@ -34,17 +34,18 @@ public class BulletScript : MonoBehaviour
 
 	void OnCollisionEnter(Collision col)
 	{
-		ParticleMan.Emit(0, Random.Range(2,6), transform.position, col.contacts[0].normal);
-		ParticleMan.Emit(2, Random.Range(1,4), transform.position, (GetComponent<Rigidbody>().velocity.normalized*.5f + col.contacts[0].normal));
-		if (col.transform.CompareTag("Ground"))
-		{
-			StartCoroutine(Die());
-		}
+		ParticleMan.Emit(0, Random.Range(2, 6), transform.position, col.contacts[0].normal);
+		ParticleMan.Emit(2, Random.Range(1, 4), transform.position, (GetComponent<Rigidbody>().velocity.normalized * .5f + col.contacts[0].normal));
 		if (col.transform.CompareTag("Destructable"))
 		{
 			_rb.velocity = _oldVelocity * .9f;
 			col.gameObject.GetComponent<DestructableBehaviour>().TakeDamage(col.relativeVelocity.magnitude, col);
 			StartCoroutine(Die());
+		}
+		else
+		{
+			StartCoroutine(Die());
+			_lr.widthMultiplier = _lr.widthMultiplier * .7f;
 		}
 	}
 

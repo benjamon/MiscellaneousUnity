@@ -71,13 +71,13 @@ public class GunControl : MonoBehaviour
 
 		int n = 60;
 
-		ParticleSystem system = ParticleMan.Instance.Emitters[1];
+		ParticleSystem system = ParticleMan.Instance.Emitters[1].Emitters[0];
 
 		system.Emit(n);
 		Particle[] ps = new Particle[system.particleCount];
 		system.GetParticles(ps);
-		Color32 a = new Color32(150, 120, 0, 45);
-		Color32 b = new Color32(130, 120, 120, 120);
+		//Color32 a = new Color32(150, 120, 0, 45);
+		//Color32 b = new Color32(130, 120, 120, 120);
 		for (int i = ps.Length - n; i < ps.Length; i++)
 		{
 			int j = (i - ps.Length + n);
@@ -88,13 +88,13 @@ public class GunControl : MonoBehaviour
 
 
 			ps[i].position = Vector3.Lerp(FunPoint.position, Reticle.position + v * amp, f);
-			ps[i].startColor = Color32.Lerp(b, a, f);
+			//ps[i].startColor = Color32.Lerp(b, a, f);
 			ps[i].startSize = f * 12f - 11f;
 			if (f < .1f)
 				ps[i].velocity = f * (FunPoint.forward + 
 					FunPoint.up * Random.Range(-.4f, .4f) + FunPoint.right * Random.Range(-.4f, .4f));
 		}
-		ParticleMan.Instance.Emitters[1].SetParticles(ps, ps.Length);
+		ParticleMan.Instance.Emitters[1].Emitters[0].SetParticles(ps, ps.Length);
 	}
 
 	public IEnumerator FlashGun()
