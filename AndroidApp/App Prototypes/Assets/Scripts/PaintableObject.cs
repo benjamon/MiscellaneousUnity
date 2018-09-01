@@ -12,6 +12,7 @@ public class PaintableObject : MonoBehaviour
 	private Color[] _brushColors;
 	private Vector3[] _touchHistory;
 	private int _imageSize = 256, _brushSize = 32;
+	private Collider _dishCollider;
 	public TextMeshPro DebugText;
 
 	void OnEnable()
@@ -22,6 +23,7 @@ public class PaintableObject : MonoBehaviour
 		_brushColors = new Color[_brushSize * _brushSize];
 		_camera = Camera.main;
 		_touchHistory = new Vector3[10];
+		_dishCollider = GetComponent<Collider>();
 
 		Debug.Log(pixelColors.Length);
 
@@ -44,7 +46,6 @@ public class PaintableObject : MonoBehaviour
 		}
 
 		Dish.material.SetTexture("_GrimeMask", _grimeMap);
-		_grimeMap.anisoLevel = 0;
 	}
 
 	public void ApplyGrime()
@@ -63,6 +64,11 @@ public class PaintableObject : MonoBehaviour
 				//t.parent = transform;
 			}
 		}
+		_grimeMap.Apply();
+	}
+
+	public void ApplyUpdates()
+	{
 		_grimeMap.Apply();
 	}
 
@@ -99,40 +105,18 @@ public class PaintableObject : MonoBehaviour
 		_grimeMap.SetPixels(x, y, endX, endY, pixels);
 	}
 
-	//var fillColor : Color = Color(1, 0.0, 0.0);
-	//var fillColorArray = tex2.GetPixels();
-
-	//	for(var i = 0; i<fillColorArray.Length; ++i)
-	//{
-	//	fillColorArray[i] = fillColor;
-	//}
-
-	// Update is called once per frame
-	void Update ()
-	{
-		DebugText.text = $"Touch Count: {Input.touchCount} ";
-//#if UNITY_EDITOR
-//		MouseSponge();
-//		return;
-//#endif
-		//TouchSponges();
-
-		_grimeMap.Apply();
-
-		DebugText.text += $"\n({Mathf.RoundToInt(CalculatePerecentage() * 100f)}%)";
-	}
-
-	public void CleanRay(Ray r, float strength, int brushSize)
+	public RaycastHit CleanRay(Ray r, float strength, int brushSize, int Bubbles = 0)
 	{
 		RaycastHit rch = new RaycastHit();
-		if (Physics.Raycast(r, out rch))
+		if (_dishCollider.Raycast(r, out rch, 50))
 		{
 			if (rch.transform == transform)
 			{
-				TryBubl(rch.point);
+				TryBubl(rch.point, Bubbles);
 				CleanTexture(rch.textureCoord, strength, brushSize);
 			}
 		}
+		return rch;
 	}
 
 	void TouchSponges()
@@ -181,10 +165,10 @@ public class PaintableObject : MonoBehaviour
 		DebugText.text += $"\n({Mathf.RoundToInt(CalculatePerecentage() * 100f)}%)";
 	}
 
-	public void TryBubl(Vector3 position)
+	public void TryBubl(Vector3 position, int Bubbles)
 	{
-		if (Random.Range(0f, 1f) < .2f)
-			ParticleMan.Emit(0, 1, position, Vector3.up);
+		if (Bubbles > 0 && Random.Range(0f, 1f) < .2f)
+			ParticleMan.Emit(0, Bubbles, position, Vector3.up);
 	}
 
 	float CalculatePerecentage()

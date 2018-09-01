@@ -59,14 +59,13 @@
 	{
 		float g = tex2D(_GrimeMask, i.uv).x;
 		float4 gtx = tex2D(_GrimeTex, i.uv);
-		g = g * gtx.a;
-		fixed4 col = lerp(tex2D(_MainTex, i.uv) * _Color, gtx, g);
+		fixed4 col = lerp(tex2D(_MainTex, i.uv) * _Color, gtx, g * gtx.a);
 		// compute shadow attenuation (1.0 = fully lit, 0.0 = fully shadowed)
 		fixed shadow = SHADOW_ATTENUATION(i);
 		// darken light's illumination with shadow, keep ambient intact
 		fixed3 lighting = i.diff * shadow + i.ambient;
 		col.rgb *= lighting;
-		return col;
+		return col * (1. - g * .12);
 	}
 		ENDCG
 	}

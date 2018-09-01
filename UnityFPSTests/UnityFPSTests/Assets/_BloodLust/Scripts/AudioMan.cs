@@ -14,11 +14,29 @@ public class AudioMan : MonoBehaviour {
         Sounds.AddRange(soundArray);
     }
 
+	public static AudioSource PlaySound(SoundName name, Vector3 position)
+	{
+		if (Sounds.Exists(x => x.name == name))
+		{
+			AudioSource choice = ChooseSource(Sounds.Find(x => x.name == name));
+			if (choice != null)
+			{
+				choice.transform.position = position;
+				choice.Play();
+			}
+			return choice;
+		}
+		return null;
+	}
+
     public static AudioSource PlaySound(SoundName name)
     {
         if (Sounds.Exists(x => x.name == name))
         {
-            return ChooseSource(Sounds.Find(x => x.name == name));
+			AudioSource choice = ChooseSource(Sounds.Find(x => x.name == name));
+			if (choice != null)
+				choice.Play();
+			return choice;
         }
         return null;
     }
@@ -34,11 +52,10 @@ public class AudioMan : MonoBehaviour {
         int i = 0;
         while (tries > 0)
         {
-            i = UnityEngine.Random.Range(0, sound.Sources.Length - 1);
+            i = UnityEngine.Random.Range(0, sound.Sources.Length);
             tries--;
-            if (!sound.Sources[i].isPlaying || tries == 0)
+            if (!sound.Sources[i].isPlaying)
             {
-                sound.Sources[i].Play();
                 return sound.Sources[i];
             }
         }
@@ -56,5 +73,8 @@ public class AudioSound
 public enum SoundName
 {
 	GunFired,
-	Footstep
+	Footstep,
+	Ricochet,
+	StoneCrunch,
+	BulletImapct
 }

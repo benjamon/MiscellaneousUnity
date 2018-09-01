@@ -91,12 +91,12 @@ public class PlayerControl : MonoBehaviour
 		{
 			_cam.fieldOfView -= 2.5f;
 			Arm.localPosition = Vector3.Lerp(Arm.localPosition, ArmTarget.localPosition, .16f);
-			_dof.aperture.value = Mathf.Lerp(_dof.aperture.value, .4f, .12f);
+			_dof.aperture.value = Mathf.Lerp(_dof.aperture.value, .6f, .17f);
 		}
 		else
 		{
 			Arm.localPosition = Vector3.Lerp(Arm.localPosition, _initArm, .1f);
-			_dof.aperture.value = Mathf.Lerp(_dof.aperture.value, 8f, .12f);
+			_dof.aperture.value = Mathf.Lerp(_dof.aperture.value, 24f, .12f);
 		}
 	}
 

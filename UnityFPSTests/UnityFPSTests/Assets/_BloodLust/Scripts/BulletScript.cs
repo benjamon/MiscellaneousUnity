@@ -10,6 +10,7 @@ public class BulletScript : MonoBehaviour
 	private Vector3 _oldVelocity;
 	private Rigidbody _rb;
 	private TrailRenderer _lr;
+	private bool _canDoyng = true;
 
 	// Use this for initialization
 	IEnumerator Start ()
@@ -36,6 +37,7 @@ public class BulletScript : MonoBehaviour
 	{
 		ParticleMan.Emit(0, Random.Range(2, 6), transform.position, col.contacts[0].normal);
 		ParticleMan.Emit(2, Random.Range(1, 4), transform.position, (GetComponent<Rigidbody>().velocity.normalized * .5f + col.contacts[0].normal));
+
 		if (col.transform.CompareTag("Destructable"))
 		{
 			_rb.velocity = _oldVelocity * .9f;
@@ -46,6 +48,16 @@ public class BulletScript : MonoBehaviour
 		{
 			StartCoroutine(Die());
 			_lr.widthMultiplier = _lr.widthMultiplier * .7f;
+			if (_canDoyng)
+			{
+				_canDoyng = false;
+				if (col.transform.CompareTag("Statue"))
+				{
+					AudioMan.PlaySound(SoundName.BulletImapct, transform.position);
+				}
+				else
+					AudioMan.PlaySound(SoundName.Ricochet, transform.position);
+			}
 		}
 	}
 

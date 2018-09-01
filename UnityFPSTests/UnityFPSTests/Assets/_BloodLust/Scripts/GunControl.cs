@@ -62,12 +62,6 @@ public class GunControl : MonoBehaviour
 
 	public void MakeParticleLine()
 	{
-		//int numParts = (int)((FunPoint.position - Reticle.position).magnitude * 2f);
-
-		//for (int i = 0; i < numParts; i++)
-		//{
-		//	ParticleMan.Emit(1, 1, Vector3.Lerp(FunPoint.position, Reticle.position, ((float)i) / numParts), FunPoint.forward);
-		//}
 
 		int n = 60;
 

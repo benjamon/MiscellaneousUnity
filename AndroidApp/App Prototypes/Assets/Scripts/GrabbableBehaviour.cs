@@ -4,34 +4,35 @@ using UnityEngine;
 
 public class GrabbableBehaviour : MonoBehaviour
 {
-	[HideInInspector] public int Grabber = -1;
-	internal Collider _col;
-	internal Vector3 _startPosition;
-	internal float _startDistance;
-	internal Camera _camera;
-	internal Transform _cam;
+	[HideInInspector] public int FingerId = -1;
+	internal Collider Col;
+	internal Vector3 StartPosition;
+	internal float StartDistance;
+	internal Camera MainCam;
+	internal Transform Cam;
 
 	// Use this for initialization
 	void Start ()
 	{
-		_camera = Camera.main;
-		_cam = _camera.transform;
-		_startPosition = transform.position;
-		_startDistance = (transform.position - _cam.position).magnitude;
-		_col = GetComponent<Collider>();
+		MainCam = Camera.main;
+		Cam = MainCam.transform;
+		StartPosition = transform.position;
+		StartDistance = (transform.position - Cam.position).magnitude;
+		Col = GetComponent<Collider>();
 	}
 	
 	// Update is called once per frame
 	void Update () {
-		if (Grabber == -1)
+		if (FingerId == -1)
 		{
 #if UNITY_EDITOR
 			if (Input.GetMouseButtonDown(0))
 			{
 				RaycastHit rch = new RaycastHit();
-				if (_col.Raycast(_camera.ScreenPointToRay(Input.mousePosition), out rch, 10))
+				if (Col.Raycast(MainCam.ScreenPointToRay(Input.mousePosition), out rch, 10))
 				{
-					Grabber = 0;
+					FingerId = 0;
+					ItemGrabbed();
 					return;
 				}
 			}
@@ -42,14 +43,15 @@ public class GrabbableBehaviour : MonoBehaviour
 				if (Input.GetTouch(t).phase == TouchPhase.Began)
 				{
 					RaycastHit rch = new RaycastHit();
-					if (_col.Raycast(_camera.ScreenPointToRay(touchPosition), out rch, 10))
+					if (Col.Raycast(MainCam.ScreenPointToRay(touchPosition), out rch, 10))
 					{
-						Grabber = t;
+						FingerId = t;
+						ItemGrabbed();
 						return;
 					}
 				}
 			}
-			transform.position = Vector3.Lerp(transform.position, _startPosition, .1f);
+			transform.position = Vector3.Lerp(transform.position, StartPosition, .1f);
 		}
 		else
 		{
@@ -57,28 +59,45 @@ public class GrabbableBehaviour : MonoBehaviour
 		}
 	}
 
+	public virtual void ItemGrabbed()
+	{
+	}
+
 	public virtual void GrabUpdate()
 	{
 #if UNITY_EDITOR
 		if (Input.GetMouseButton(0))
 		{
-			transform.position = _cam.position + _camera.ScreenPointToRay(Input.mousePosition).direction * _startDistance;
+			transform.position = Cam.position + MainCam.ScreenPointToRay(Input.mousePosition).direction * StartDistance;
 		}
 
 		if (Input.GetMouseButtonUp(0))
 		{
-			Grabber = -1;
+			FingerId = -1;
 		}
 #else
-		Touch t = Input.GetTouch(Grabber);
+		Touch t = GetFingerTouch();
 		if (t.phase <= TouchPhase.Stationary)
 		{
-			transform.position = _cam.position + _camera.ScreenPointToRay(t.position).direction * _startDistance;
+			transform.position = Cam.position + MainCam.ScreenPointToRay(t.position).direction * StartDistance;
 		}
 		else
 		{
-			Grabber = -1;
+			FingerId = -1;
 		}
 #endif
+	}
+
+	public Touch GetFingerTouch()
+	{
+		for (int i = 0; i < Input.touchCount; i++)
+		{
+			Touch t = Input.GetTouch(i);
+			if (t.fingerId != FingerId)
+				continue;
+			return t;
+		}
+		Debug.Log("Problemo");
+		return new Touch();
 	}
 }
