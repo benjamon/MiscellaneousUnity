@@ -12,6 +12,7 @@
 	{
 		Tags{ "LightMode" = "ForwardBase" "Queue" = "Transparent" "RenderType" = "Transparent" }
 		Zwrite Off
+		Cull Back
 		Blend SrcAlpha OneMinusSrcAlpha
 		Pass
 	{

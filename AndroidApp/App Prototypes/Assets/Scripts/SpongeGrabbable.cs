@@ -5,8 +5,6 @@ using UnityEngine;
 
 public class SpongeGrabbable : GrabbableBehaviour
 {
-	public PaintableObject Dish;
-
 	private Vector3 _prevPosition;
 	public int BrushSize = 32;
 	public float BrushStrength = .96f;
@@ -42,7 +40,7 @@ public class SpongeGrabbable : GrabbableBehaviour
 		for (int i = 0; i < mmag - 1f; i += BrushSize / 4)
 		{
 			Ray r = MainCam.ScreenPointToRay(Vector3.Lerp(_prevPosition, Input.mousePosition, i / mmag));
-			RaycastHit rch = Dish.CleanRay(r, BrushStrength, BrushSize, Bubbles);
+			RaycastHit rch = PaintableObject.Instance.CleanRay(r, BrushStrength, BrushSize, Bubbles);
 			if (rch.transform != null && UnityEngine.Random.Range(0f, 1f) < .01f)
 			{
 				GameObject g = Instantiate(SudsPrefab, rch.point, Quaternion.identity);
@@ -51,7 +49,7 @@ public class SpongeGrabbable : GrabbableBehaviour
 			}
 		}
 		_prevPosition = Input.mousePosition;
-		Dish.ApplyUpdates();
+		PaintableObject.Instance.ApplyUpdates();
 		return;
 #endif
 
@@ -61,8 +59,8 @@ public class SpongeGrabbable : GrabbableBehaviour
 		for (int i = 0; i < mag - 1f; i += BrushSize / 4)
 		{
 			Ray r = MainCam.ScreenPointToRay(Vector3.Lerp(_prevPosition, t.position, i / mag));
-			Dish.CleanRay(r, .96f, BrushSize, Bubbles);
-			RaycastHit rch = Dish.CleanRay(r, BrushStrength, BrushSize, Bubbles);
+			PaintableObject.Instance.CleanRay(r, .96f, BrushSize, Bubbles);
+			RaycastHit rch = PaintableObject.Instance.CleanRay(r, BrushStrength, BrushSize, Bubbles);
 			if (rch.transform != null && UnityEngine.Random.Range(0f, 1f) < .01f)
 			{
 				GameObject g = Instantiate(SudsPrefab, rch.point, Quaternion.identity);
@@ -70,7 +68,7 @@ public class SpongeGrabbable : GrabbableBehaviour
 				g.GetComponent<SudsMaster>().PlaceSuds(rch.normal);
 			}
 		}
-		Dish.ApplyUpdates();
+		PaintableObject.Instance.ApplyUpdates();
 		_prevPosition = t.position;
 	}
 }

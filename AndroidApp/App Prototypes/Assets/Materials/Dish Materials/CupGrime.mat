@@ -43,7 +43,7 @@ Material:
         m_Scale: {x: 1, y: 1}
         m_Offset: {x: 0, y: 0}
     - _GrimeTex:
-        m_Texture: {fileID: 2800000, guid: ba97f07183b096e4c81ec16e62d6af83, type: 3}
+        m_Texture: {fileID: 2800000, guid: d35d163d794678e47abd6f0f0c3f59f1, type: 3}
         m_Scale: {x: 1, y: 1}
         m_Offset: {x: 0, y: 0}
     - _MainTex:

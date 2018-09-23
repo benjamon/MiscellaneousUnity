@@ -5,18 +5,20 @@ using UnityEngine;
 
 public class PaintableObject : MonoBehaviour
 {
+	public static PaintableObject Instance;
 	public MeshRenderer Dish;
 	public GameObject Grime;
 	private Texture2D _grimeMap;
 	private Camera _camera;
 	private Color[] _brushColors;
 	private Vector3[] _touchHistory;
-	private int _imageSize = 256, _brushSize = 32;
+	private int _imageSize = 156, _brushSize = 14;
 	private Collider _dishCollider;
 	public TextMeshPro DebugText;
 
 	void OnEnable()
 	{
+		Instance = this;
 		_grimeMap = new Texture2D(_imageSize, _imageSize, TextureFormat.ARGB32, false);
 		_grimeMap.name = "Grime Map";
 		Color[] pixelColors = _grimeMap.GetPixels();

@@ -51,6 +51,7 @@ public class SudsMaster : MonoBehaviour
 
 	public void Die()
 	{
+		GetComponent<Collider>().enabled = false;
 		StartCoroutine(BeRinsed());
 		IsDying = true;
 	}

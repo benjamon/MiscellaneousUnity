@@ -4,11 +4,21 @@ ModelImporter:
   serializedVersion: 22
   fileIDToRecycleName:
     100000: //RootNode
+    100002: Circle.002
+    100004: Point
+    100006: Point.001
     400000: //RootNode
+    400002: Circle.002
+    400004: Point
+    400006: Point.001
     2100000: Material
     2300000: //RootNode
+    2300002: Circle.002
     3300000: //RootNode
+    3300002: Circle.002
     4300000: Circle.002
+    10800000: Point
+    10800002: Point.001
   externalObjects: {}
   materials:
     importMaterials: 1
