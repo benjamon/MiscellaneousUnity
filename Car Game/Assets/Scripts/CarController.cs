@@ -181,8 +181,8 @@ public class CarController : MonoBehaviour
 		Transform t = w.Parent;
 		Vector3 p = t.position;
 		Vector3 linep = t.position + transform.up;
-		//Gizmos.color = Color.white;
-		//Gizmos.DrawWireSphere(p, WheelRadius);
+		Gizmos.color = Color.white;
+		Gizmos.DrawWireSphere(p, WheelRadius);
 		//Gizmos.color = Color.green;
 		//Gizmos.DrawLine(linep, linep + transform.up * w.ForceOnGround);
 		//linep += transform.forward * .1f;
