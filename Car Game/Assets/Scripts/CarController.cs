@@ -135,9 +135,11 @@ public class CarController : MonoBehaviour
 		{
 			if (Input.GetKey(KeyCode.Space))
 			{
-				body.AddTorque(-Input.GetAxis("Vertical") * transform.forward * AirControl -
-					Input.GetAxis("Horizontal") * transform.right * AirControl);
-				body.angularVelocity *= .975f;
+                Vector3 torque = -Input.GetAxis("Vertical") * transform.forward * AirControl -
+                    Input.GetAxis("Horizontal") * transform.right * AirControl;
+                body.AddTorque(torque * 60f * Time.deltaTime);
+                float dif = (body.angularVelocity.magnitude - body.angularVelocity.magnitude * .975f) * (60f * Time.deltaTime);
+				body.angularVelocity -= body.angularVelocity.normalized * dif;
 			}
 		}
 		
