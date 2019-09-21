@@ -32,12 +32,13 @@ public class CarController : MonoBehaviour
 	public float AirControl;
 
 	public CarParameters CarParams;
-
-    public ParticleSystem dustParticles;
+    
 	public Rigidbody body;
 
 	float wheelY;
 	float wheelAngle;
+
+    public int joystick;
 
 	public TextMeshProUGUI DebugText;
 
@@ -59,11 +60,11 @@ public class CarController : MonoBehaviour
 		{
 			t.transform.localRotation = Quaternion.identity;
             t.Rotate(Vector3.up, angle);
-			w.SpinDistance += Input.GetAxis("Vertical") * HorsePower * Time.deltaTime;
+			w.SpinDistance += Input.GetAxis($"Vertical_{joystick}") * HorsePower * Time.deltaTime;
 		}
 		w.SpinDistance = Mathf.Clamp(w.SpinDistance, -TopSpinSpeed, TopSpinSpeed);
 
-        if (Input.GetButton("Brake"))
+        if (Input.GetButton($"Brake_{joystick}"))
         {
             w.SpinDistance = TimeScaledMultiply(w.SpinDistance, 1f / BrakeStrength);
 			//body.AddForceAtPosition(forceOnWheel * -pointVelocity.normalized * body.mass * BrakeStrength, t.position);
@@ -99,15 +100,6 @@ public class CarController : MonoBehaviour
             //FORWARD
             Vector3 speedWithTread = Vector3.Project(pointVelocity, w.Parent.right);
 			float currentWheelSpeed = (speedWithTread.magnitude * Vector3.Dot(speedWithTread, w.Parent.right));
-            
-            float wheelAcceleration = Mathf.Abs(w.SpinDistance - currentWheelSpeed);
-            if (wheelAcceleration > 9f)
-            {
-                if (UnityEngine.Random.Range(0f, 10f) > 9f)
-                    ParticleMan.Emit("dust", 1, hit.point, hit.normal);
-                if (UnityEngine.Random.Range(0f, 3f) > 2f)
-                    ParticleMan.Emit("dirt", Mathf.Min(Mathf.FloorToInt(MaxTorque / 3f),Mathf.FloorToInt((wheelAcceleration - 9f) / 5f)) + 1, hit.point, hit.normal);
-            }
 
 
             float suspensionActivation = Mathf.Clamp01((WheelRadius * 2f + SuspensionDistance - hit.distance) / SuspensionDistance);
@@ -118,8 +110,18 @@ public class CarController : MonoBehaviour
 				speedAgainstTread * InertiaAbsorb + //counter skid momentum
 				speedAgainstTread.magnitude * t.right * InertiaReroute + //re-add skid momentum lost to forward direction
 				Mathf.Clamp(w.SpinDistance - currentWheelSpeed, -MaxTorque, MaxTorque) * TireGripStrength * w.Parent.right;
-            
-            w.SpinDistance = Mathf.Lerp(w.SpinDistance, currentWheelSpeed, .5f);
+
+            float wheelAcceleration = Mathf.Abs(w.SpinDistance - currentWheelSpeed);
+            if (wheelAcceleration > 9f)
+            {
+                if (UnityEngine.Random.Range(0f, 10f) > 9f)
+                    ParticleMan.Emit("dust", 1, hit.point, hit.normal - t.right);
+                if (UnityEngine.Random.Range(0f, 3f) > 2f)
+                    ParticleMan.Emit("dirt", Mathf.Min(Mathf.FloorToInt(MaxTorque / 3f), Mathf.FloorToInt((wheelAcceleration - 9f))) + 1, hit.point, 
+                        hit.normal - t.right);
+            }
+
+            w.SpinDistance = Mathf.Lerp(w.SpinDistance, currentWheelSpeed, .4f);
 
 			//Put wheel on the ground
 			t.position = Vector3.Lerp(oldPosition, t.position - transform.up * (hit.distance - WheelRadius * 2f), .2f);
@@ -153,7 +155,7 @@ public class CarController : MonoBehaviour
                 //Steering rotation of the wheel as a whole
                 float rotAmount = -forwardVelocity * wheelAngle * Time.deltaTime * .3f;
 
-                if (Mathf.Abs(wheelAngle) < 1f && Input.GetAxis("Horizontal") == 0f)
+                if (Mathf.Abs(wheelAngle) < 1f && Input.GetAxis($"Horizontal_{joystick}") == 0f)
                     wheelAngle = 0f;
                 else if (wheelAngle > 0f)
                     wheelAngle = Mathf.Max(0f, wheelAngle - Mathf.Abs(rotAmount));
@@ -179,19 +181,19 @@ public class CarController : MonoBehaviour
         //Air Tricks
         if (!(fl || fr || bl || br))
 		{
-			if (Input.GetButton("Brake"))
+			if (Input.GetButton($"Brake_{joystick}"))
 			{
-                Vector3 torque = 2f * Input.GetAxis("AimY") * transform.forward * AirControl +
-                     -Input.GetAxis("AimX") * transform.right * AirControl;
+                Vector3 torque = 2f * Input.GetAxis($"AimY_{joystick}") * transform.forward * AirControl +
+                     -Input.GetAxis($"AimX_{joystick}") * transform.right * AirControl;
                 body.AddTorque(torque * 60f * Time.deltaTime);
 				body.angularVelocity = body.angularVelocity.normalized * TimeScaledMultiply(body.angularVelocity.magnitude, .975f);
 			}
 		}
 		
-		wheelAngle = Mathf.Clamp(wheelAngle + TurnSpeed * Time.deltaTime * Input.GetAxis("Horizontal"), -MaxTurnAngle, MaxTurnAngle);
+		wheelAngle = Mathf.Clamp(wheelAngle + TurnSpeed * Time.deltaTime * Input.GetAxis($"Horizontal_{joystick}"), -MaxTurnAngle, MaxTurnAngle);
 
 		//Reset the car
-		if (Input.GetButtonDown("Cancel"))
+		if (Input.GetButtonDown($"Reset_{joystick}"))
 		{
 			transform.position = transform.position + Vector3.up;
 			transform.rotation = Quaternion.identity;
