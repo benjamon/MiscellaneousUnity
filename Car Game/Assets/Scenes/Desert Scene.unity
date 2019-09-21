@@ -1890,6 +1890,41 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 2223122009281365753, guid: d0d9e77b80de95e4b8761f76ae492897,
+        type: 3}
+      propertyPath: SizeModule.curve.maxCurve.m_Curve.Array.data[0].time
+      value: 0.0027149038
+      objectReference: {fileID: 0}
+    - target: {fileID: 2223122009281365753, guid: d0d9e77b80de95e4b8761f76ae492897,
+        type: 3}
+      propertyPath: SizeModule.curve.maxCurve.m_Curve.Array.data[0].value
+      value: 0.40539622
+      objectReference: {fileID: 0}
+    - target: {fileID: 2223122009281365753, guid: d0d9e77b80de95e4b8761f76ae492897,
+        type: 3}
+      propertyPath: InitialModule.rotation3D
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 2223122009281365753, guid: d0d9e77b80de95e4b8761f76ae492897,
+        type: 3}
+      propertyPath: InitialModule.startRotation.minMaxState
+      value: 3
+      objectReference: {fileID: 0}
+    - target: {fileID: 2223122009281365753, guid: d0d9e77b80de95e4b8761f76ae492897,
+        type: 3}
+      propertyPath: InitialModule.startRotationX.minMaxState
+      value: 3
+      objectReference: {fileID: 0}
+    - target: {fileID: 2223122009281365753, guid: d0d9e77b80de95e4b8761f76ae492897,
+        type: 3}
+      propertyPath: InitialModule.startRotationY.minMaxState
+      value: 3
+      objectReference: {fileID: 0}
+    - target: {fileID: 2223122009281365753, guid: d0d9e77b80de95e4b8761f76ae492897,
+        type: 3}
+      propertyPath: InitialModule.startRotation.scalar
+      value: 6.283185
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: d0d9e77b80de95e4b8761f76ae492897, type: 3}
 --- !u!1001 &5621352515072026338

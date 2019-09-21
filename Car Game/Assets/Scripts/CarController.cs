@@ -106,7 +106,7 @@ public class CarController : MonoBehaviour
                 if (UnityEngine.Random.Range(0f, 10f) > 9f)
                     ParticleMan.Emit("dust", 1, hit.point, hit.normal);
                 if (UnityEngine.Random.Range(0f, 3f) > 2f)
-                    ParticleMan.Emit("dirt", Mathf.FloorToInt((wheelAcceleration - 9f) / 5f) + 1, hit.point, hit.normal);
+                    ParticleMan.Emit("dirt", Mathf.Min(Mathf.FloorToInt(MaxTorque / 3f),Mathf.FloorToInt((wheelAcceleration - 9f) / 5f)) + 1, hit.point, hit.normal);
             }
 
 
