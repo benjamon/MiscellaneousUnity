@@ -33,7 +33,7 @@ public class CarController : MonoBehaviour
 
 	public CarParameters CarParams;
 
-    public ParticleSystem dirtSystem;
+    public ParticleSystem dustParticles;
 	public Rigidbody body;
 
 	float wheelY;
@@ -87,18 +87,30 @@ public class CarController : MonoBehaviour
 			w.counterTread = speedAgainstTread;
 
             float counterSpeed = speedAgainstTread.magnitude;
-            if (counterSpeed > 7.5f)
+            if (counterSpeed > 6f)
             {
-                dirtSystem.transform.position = hit.point;
-                dirtSystem.transform.forward = hit.normal;
-                dirtSystem.Emit(4);
+                if (UnityEngine.Random.Range(0f,2f) > 1f)
+                    ParticleMan.Emit("dust", 1, hit.point, hit.normal);
+                if (UnityEngine.Random.Range(0f, 3f) > 2f)
+                    ParticleMan.Emit("dirt", Mathf.FloorToInt((counterSpeed - 6f) / 2f) + 1, hit.point, hit.normal);
             }
 
-			//FORWARD
-			Vector3 speedWithTread = Vector3.Project(pointVelocity, w.Parent.right);
-			float currentWheelSpeed = (speedWithTread.magnitude * Vector3.Dot(speedWithTread, w.Parent.right));
 
-			float suspensionActivation = Mathf.Clamp01((WheelRadius * 2f + SuspensionDistance - hit.distance) / SuspensionDistance);
+            //FORWARD
+            Vector3 speedWithTread = Vector3.Project(pointVelocity, w.Parent.right);
+			float currentWheelSpeed = (speedWithTread.magnitude * Vector3.Dot(speedWithTread, w.Parent.right));
+            
+            float wheelAcceleration = Mathf.Abs(w.SpinDistance - currentWheelSpeed);
+            if (wheelAcceleration > 9f)
+            {
+                if (UnityEngine.Random.Range(0f, 10f) > 9f)
+                    ParticleMan.Emit("dust", 1, hit.point, hit.normal);
+                if (UnityEngine.Random.Range(0f, 3f) > 2f)
+                    ParticleMan.Emit("dirt", Mathf.FloorToInt((wheelAcceleration - 9f) / 5f) + 1, hit.point, hit.normal);
+            }
+
+
+            float suspensionActivation = Mathf.Clamp01((WheelRadius * 2f + SuspensionDistance - hit.distance) / SuspensionDistance);
 			w.SuspensionActivation = suspensionActivation;
 
 			w.lastForceApplied = suspensionActivation * t.up * SuspensionStrength * body.mass - //upward suspension force
