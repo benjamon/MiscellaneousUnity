@@ -62,9 +62,9 @@ public class CarController : MonoBehaviour
 		}
 		w.SpinDistance = Mathf.Clamp(w.SpinDistance, -TopSpinSpeed, TopSpinSpeed);
 
-		if (Input.GetKey(KeyCode.Space))
-		{
-			w.SpinDistance *= 1f / BrakeStrength;
+        if (Input.GetButton("Brake"))
+        {
+            w.SpinDistance = TimeScaledMultiply(w.SpinDistance, 1f / BrakeStrength);
 			//body.AddForceAtPosition(forceOnWheel * -pointVelocity.normalized * body.mass * BrakeStrength, t.position);
 		}
 
@@ -89,20 +89,21 @@ public class CarController : MonoBehaviour
 			Vector3 speedWithTread = Vector3.Project(pointVelocity, w.Parent.right);
 			float currentWheelSpeed = (speedWithTread.magnitude * Vector3.Dot(speedWithTread, w.Parent.right));
 
-			float forceOnWheel = Mathf.Clamp01((WheelRadius * 2f + SuspensionDistance - hit.distance) / SuspensionDistance);
-			w.ForceOnGround = forceOnWheel;
+			float suspensionActivation = Mathf.Clamp01((WheelRadius * 2f + SuspensionDistance - hit.distance) / SuspensionDistance);
+			w.SuspensionActivation = suspensionActivation;
 
-			w.lastForceApplied = forceOnWheel * t.up * SuspensionStrength * body.mass - //upward suspension force
+			w.lastForceApplied = suspensionActivation * t.up * SuspensionStrength * body.mass - //upward suspension force
 				normalVelocity * ShockAbsorb - //counteract vertical momentum
 				speedAgainstTread * InertiaAbsorb + //counter skid momentum
 				speedAgainstTread.magnitude * t.right * InertiaReroute + //re-add skid momentum lost to forward direction
-				Mathf.Clamp(w.SpinDistance - currentWheelSpeed, -MaxTorque, MaxTorque) * TireGripStrength * w.Parent.right ;
+				Mathf.Clamp(w.SpinDistance - currentWheelSpeed, -MaxTorque, MaxTorque) * TireGripStrength * w.Parent.right;
 
-			//if (!Input.GetKey(KeyCode.Space))
-			w.SpinDistance = Mathf.Lerp(w.SpinDistance, currentWheelSpeed, .25f);
+            //if (!Input.GetKey(KeyCode.Space))
+            w.SpinDistance = w.SpinDistance + TimeScaledMultiply((w.SpinDistance - currentWheelSpeed), .25f);
 
 			body.AddForceAtPosition(w.lastForceApplied * Time.deltaTime * 60f, t.position);
-			body.angularVelocity *= 1f - Mathf.Clamp01(speedAgainstTread.magnitude / SpinControl);
+			body.angularVelocity = body.angularVelocity.normalized * TimeScaledMultiply(body.angularVelocity.magnitude,
+                1f - Mathf.Clamp01(speedAgainstTread.magnitude / SpinControl));
 
 			//Put wheel on the ground
 			t.position = Vector3.Lerp(oldPosition, t.position - transform.up * (hit.distance - WheelRadius * 2f), .2f);
@@ -117,7 +118,7 @@ public class CarController : MonoBehaviour
 		{
 			wheelP.y = wheelY + Mathf.Min(0,Vector3.Project(-transform.up * SuspensionDistance, Vector3.up).magnitude * ((transform.up.y > 0f) ? -1f : 1f));
 			t.localPosition = Vector3.Lerp(oldLocalPosition, wheelP, .2f);
-			w.ForceOnGround = 0f;
+			w.SuspensionActivation = 0f;
 			return false;
 		}
 	}
@@ -133,13 +134,12 @@ public class CarController : MonoBehaviour
 		//Air Tricks
 		if (!(fl || fr || bl || br))
 		{
-			if (Input.GetKey(KeyCode.Space))
+			if (Input.GetButton("Brake"))
 			{
-                Vector3 torque = -Input.GetAxis("Vertical") * transform.forward * AirControl -
-                    Input.GetAxis("Horizontal") * transform.right * AirControl;
+                Vector3 torque = 2f * Input.GetAxis("AimY") * transform.forward * AirControl +
+                     -Input.GetAxis("AimX") * transform.right * AirControl;
                 body.AddTorque(torque * 60f * Time.deltaTime);
-                float dif = (body.angularVelocity.magnitude - body.angularVelocity.magnitude * .975f) * (60f * Time.deltaTime);
-				body.angularVelocity -= body.angularVelocity.normalized * dif;
+				body.angularVelocity = body.angularVelocity.normalized * TimeScaledMultiply(body.angularVelocity.magnitude, .975f);
 			}
 		}
 		
@@ -159,7 +159,7 @@ public class CarController : MonoBehaviour
 			wheelAngle = Mathf.Min(0f, wheelAngle + Mathf.Abs(rotAmount));
 
 		//Reset the car
-		if (Input.GetKeyDown(KeyCode.K))
+		if (Input.GetButtonDown("Cancel"))
 		{
 			transform.position = transform.position + Vector3.up;
 			transform.rotation = Quaternion.identity;
@@ -169,6 +169,12 @@ public class CarController : MonoBehaviour
 
 		DebugText.text = StringUtility.Substr((body.velocity.magnitude * 2.2369356).ToString(), 0, 3) + "mph";
 	}
+
+    float TimeScaledMultiply(float f, float m)
+    {
+        float v = f * m;
+        return f - (f - v) * Time.deltaTime * 60f;
+    }
 
 	private void OnDrawGizmos()
 	{
@@ -205,7 +211,7 @@ public class Wheel
 	public Transform Parent;
 	public Transform Geo;
 	public float SpinDistance;
-	public float ForceOnGround;
+	public float SuspensionActivation;
 	public float VertSpeed;
 	public Vector3 lastForceApplied;
 	public Vector3 counterTread;
