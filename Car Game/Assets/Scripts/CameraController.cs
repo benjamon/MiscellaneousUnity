@@ -12,20 +12,30 @@ public class CameraController : MonoBehaviour
 
 	private Rigidbody body;
 	private Vector3 lastUsableVelocity = Vector3.right;
-
-	private void Awake()
+	
+	public void Awake()
 	{
+		if (FollowTarget != null)
+			body = FollowTarget.GetComponent<Rigidbody>();
+	}
+
+	public void SetFollowTarget(Transform t)
+	{
+		FollowTarget = t;
 		body = FollowTarget.GetComponent<Rigidbody>();
 	}
 
 	void FixedUpdate()
 	{
-		Quaternion q = transform.rotation;
-		transform.rotation = Quaternion.identity;
-		transform.LookAt(TranslateOffset(LookPosition));
-		Quaternion q2 = transform.rotation;
-		transform.rotation = Quaternion.Lerp(q, q2, LerpSpeed);
-		transform.position = Vector3.Lerp(transform.position, TranslateOffset(FollowPosition), LerpSpeed);
+		if (body != null)
+		{
+			Quaternion q = transform.rotation;
+			transform.rotation = Quaternion.identity;
+			transform.LookAt(TranslateOffset(LookPosition));
+			Quaternion q2 = transform.rotation;
+			transform.rotation = Quaternion.Lerp(q, q2, LerpSpeed);
+			transform.position = Vector3.Lerp(transform.position, TranslateOffset(FollowPosition), LerpSpeed);
+		}
 	}
 
 	Vector3 TranslateOffset(Vector3 offset)

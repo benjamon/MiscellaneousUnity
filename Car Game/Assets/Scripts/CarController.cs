@@ -86,22 +86,22 @@ public class CarController : MonoBehaviour
 			//SIDE
 			Vector3 speedAgainstTread = Vector3.Project(pointVelocity, w.Parent.forward);
 			w.counterTread = speedAgainstTread;
-
+			
             float counterSpeed = speedAgainstTread.magnitude;
             if (counterSpeed > 6f)
             {
-                if (UnityEngine.Random.Range(0f,2f) > 1f)
-                    ParticleMan.Emit("dust", 1, hit.point, hit.normal);
+				float frameRateMult = 120f * Time.smoothDeltaTime;
+				if (UnityEngine.Random.Range(0f,2f) > 1f)
+					ParticleMan.Emit("dust", 1, hit.point, hit.normal);
                 if (UnityEngine.Random.Range(0f, 3f) > 2f)
-                    ParticleMan.Emit("dirt", Mathf.FloorToInt((counterSpeed - 6f) / 2f) + 1, hit.point, hit.normal);
+                    ParticleMan.Emit("dirt", Mathf.FloorToInt(frameRateMult * (counterSpeed - 6f) / 2f) + 1, hit.point, hit.normal);
             }
 
 
             //FORWARD
             Vector3 speedWithTread = Vector3.Project(pointVelocity, w.Parent.right);
 			float currentWheelSpeed = (speedWithTread.magnitude * Vector3.Dot(speedWithTread, w.Parent.right));
-
-
+			
             float suspensionActivation = Mathf.Clamp01((WheelRadius * 2f + SuspensionDistance - hit.distance) / SuspensionDistance);
 			w.SuspensionActivation = suspensionActivation;
 
@@ -113,11 +113,12 @@ public class CarController : MonoBehaviour
 
             float wheelAcceleration = Mathf.Abs(w.SpinDistance - currentWheelSpeed);
             if (wheelAcceleration > 9f)
-            {
-                if (UnityEngine.Random.Range(0f, 10f) > 9f)
-                    ParticleMan.Emit("dust", 1, hit.point, hit.normal - t.right);
+			{
+				float frameRateMult = 120f * Time.smoothDeltaTime;
+				if (UnityEngine.Random.Range(0f, 2f) > 1f)
+					ParticleMan.Emit("dust", 1, hit.point, hit.normal - t.right);
                 if (UnityEngine.Random.Range(0f, 3f) > 2f)
-                    ParticleMan.Emit("dirt", Mathf.Min(Mathf.FloorToInt(MaxTorque / 3f), Mathf.FloorToInt((wheelAcceleration - 9f))) + 1, hit.point, 
+                    ParticleMan.Emit("dirt", Mathf.FloorToInt(frameRateMult * Mathf.Min(MaxTorque / 3f, (wheelAcceleration - 9f) + 1)), hit.point, 
                         hit.normal - t.right);
             }
 
