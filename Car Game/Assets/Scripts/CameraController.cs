@@ -37,13 +37,18 @@ public class CameraController : MonoBehaviour
 			Quaternion q2 = transform.rotation;
 			transform.rotation = Quaternion.Lerp(q, q2, LerpSpeed);
 			transform.position = Vector3.Lerp(transform.position, TranslateOffset(FollowPosition), LerpSpeed);
-		} else
+		}
+	}
+
+	private void Update()
+	{
+		if (body == null)
 		{
-			transform.position += transform.forward * Input.GetAxis($"Vertical_{joystick}") +
-				transform.right * Input.GetAxis($"Horizontal_{joystick}");
-			transform.Rotate(Vector3.up, Input.GetAxis($"AimX_{joystick}"));
-			transform.Rotate(Vector3.Project(transform.forward, Vector3.up), Input.GetAxis($"AimX_{joystick}"));
-			if (Input.GetButtonDown($"Brake_{joystick}"))
+			transform.position += transform.forward * Input.GetAxis($"L_YAxis_{joystick}") +
+				transform.right * Input.GetAxis($"L_XAxis_{joystick}");
+			transform.Rotate(Vector3.up, Input.GetAxis($"R_XAxis_{joystick}"));
+			transform.Rotate(Vector3.Project(transform.forward, Vector3.up), Input.GetAxis($"R_YAxis_{joystick}"));
+			if (Input.GetButtonDown($"LB_{joystick}"))
 				GameController.Instance.SpawnCar(this);
 		}
 	}

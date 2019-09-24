@@ -58,11 +58,11 @@ public class CarController : MonoBehaviour
 		{
 			t.transform.localRotation = Quaternion.identity;
             t.Rotate(Vector3.up, angle);
-			w.SpinDistance += Input.GetAxis($"Vertical_{joystick}") * HorsePower * Time.deltaTime;
+			w.SpinDistance += (Input.GetAxis($"TriggersL_{joystick}") + Input.GetAxis($"TriggersR_{joystick}")) * HorsePower * Time.deltaTime;
 		}
 		w.SpinDistance = Mathf.Clamp(w.SpinDistance, -TopSpinSpeed, TopSpinSpeed);
 
-        if (Input.GetButton($"Brake_{joystick}"))
+        if (Input.GetButton($"LB_{joystick}"))
         {
             w.SpinDistance = TimeScaledMultiply(w.SpinDistance, 1f / BrakeStrength);
 			//body.AddForceAtPosition(forceOnWheel * -pointVelocity.normalized * body.mass * BrakeStrength, t.position);
@@ -154,7 +154,7 @@ public class CarController : MonoBehaviour
                 //Steering rotation of the wheel as a whole
                 float rotAmount = -forwardVelocity * wheelAngle * Time.deltaTime * .3f;
 
-                if (Mathf.Abs(wheelAngle) < 1f && Input.GetAxis($"Horizontal_{joystick}") == 0f)
+                if (Mathf.Abs(wheelAngle) < 1f && Input.GetAxis($"L_XAxis_{joystick}") == 0f)
                     wheelAngle = 0f;
                 else if (wheelAngle > 0f)
                     wheelAngle = Mathf.Max(0f, wheelAngle - Mathf.Abs(rotAmount));
@@ -179,19 +179,19 @@ public class CarController : MonoBehaviour
         //Air Tricks
         if (!(fl || fr || bl || br))
 		{
-			if (Input.GetButton($"Brake_{joystick}"))
+			if (Input.GetButton($"LB_{joystick}"))
 			{
-                Vector3 torque = 2f * Input.GetAxis($"AimY_{joystick}") * transform.forward * AirControl +
-                     -Input.GetAxis($"AimX_{joystick}") * transform.right * AirControl;
+                Vector3 torque = 2f * Input.GetAxis($"L_YAxis_{joystick}") * transform.forward * AirControl +
+                     -Input.GetAxis($"L_XAxis_{joystick}") * transform.right * AirControl;
                 body.AddTorque(torque * 60f * Time.deltaTime);
 				body.angularVelocity = body.angularVelocity.normalized * TimeScaledMultiply(body.angularVelocity.magnitude, .975f);
 			}
 		}
 		
-		wheelAngle = Mathf.Clamp(wheelAngle + TurnSpeed * Time.deltaTime * Input.GetAxis($"Horizontal_{joystick}"), -MaxTurnAngle, MaxTurnAngle);
+		wheelAngle = Mathf.Clamp(wheelAngle + TurnSpeed * Time.deltaTime * Input.GetAxis($"R_XAxis_{joystick}"), -MaxTurnAngle, MaxTurnAngle);
 
 		//Reset the car
-		if (Input.GetButtonDown($"Reset_{joystick}"))
+		if (Input.GetButtonDown($"Back_{joystick}"))
 		{
 			transform.position = transform.position + Vector3.up;
 			transform.rotation = Quaternion.identity;
