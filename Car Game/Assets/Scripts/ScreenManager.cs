@@ -76,14 +76,13 @@ public class ScreenManager
 			{
 				Camera = g.GetComponent<Camera>(),
 				Controller = g.GetComponent<CameraController>(),
-				PlayerNumber = i + 1,
 				Texture = rt,
 				ImageElement = img
 			};
-
-			p.Controller.SetFollowTarget(GameCon.Car.transform);
+			
 			p.Camera.targetTexture = p.Texture;
 			img.texture = rt;
+			p.Controller.joystick = i + 1;
 			PlaceScreenRect(p);
 		}
 	}
@@ -141,8 +140,8 @@ public class ScreenManager
 		RectTransform r = p.ImageElement.rectTransform;
 		float hw = GameCon.Canvas.GetComponent<CanvasScaler>().referenceResolution.x / 2f;
 		float hh = GameCon.Canvas.GetComponent<CanvasScaler>().referenceResolution.y / 2f;
-		bool left = ((p.PlayerNumber - 1) % 2 == 0);
-		bool top = (p.PlayerNumber < 3);
+		bool left = ((p.Controller.joystick - 1) % 2 == 0);
+		bool top = (p.Controller.joystick < 3);
 		switch (_playerCount)
 		{
 			case 1:
@@ -168,5 +167,4 @@ public struct CameraProfile
 	public RenderTexture Texture;
 	public Camera Camera;
 	public RawImage ImageElement;
-	public int PlayerNumber;
 }

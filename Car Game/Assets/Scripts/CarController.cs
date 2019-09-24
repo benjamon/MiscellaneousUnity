@@ -40,8 +40,6 @@ public class CarController : MonoBehaviour
 
     public int joystick;
 
-	public TextMeshProUGUI DebugText;
-
 	private void Awake()
 	{
 		wheelY = FrontLeft.Parent.localPosition.y;
@@ -168,7 +166,6 @@ public class CarController : MonoBehaviour
 
 	public void Update()
 	{
-		DebugText.text = "";
 		bool fl = CheckWheel(FrontLeft, wheelAngle, FrontLeft.Drive);
 		bool fr = CheckWheel(FrontRight, wheelAngle, FrontRight.Drive);
 		bool bl = CheckWheel(BackLeft, -wheelAngle, BackLeft.Drive);
@@ -201,8 +198,6 @@ public class CarController : MonoBehaviour
 			body.velocity *= 0f;
 			body.angularVelocity *= 0f;
 		}
-
-		DebugText.text = Mathf.Round(body.velocity.magnitude * 2.2369356f) + "mph";
 	}
 
     float TimeScaledMultiply(float f, float m)

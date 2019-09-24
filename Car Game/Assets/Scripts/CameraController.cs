@@ -12,6 +12,8 @@ public class CameraController : MonoBehaviour
 
 	private Rigidbody body;
 	private Vector3 lastUsableVelocity = Vector3.right;
+	public int joystick;
+
 	
 	public void Awake()
 	{
@@ -35,6 +37,14 @@ public class CameraController : MonoBehaviour
 			Quaternion q2 = transform.rotation;
 			transform.rotation = Quaternion.Lerp(q, q2, LerpSpeed);
 			transform.position = Vector3.Lerp(transform.position, TranslateOffset(FollowPosition), LerpSpeed);
+		} else
+		{
+			transform.position += transform.forward * Input.GetAxis($"Vertical_{joystick}") +
+				transform.right * Input.GetAxis($"Horizontal_{joystick}");
+			transform.Rotate(Vector3.up, Input.GetAxis($"AimX_{joystick}"));
+			transform.Rotate(Vector3.Project(transform.forward, Vector3.up), Input.GetAxis($"AimX_{joystick}"));
+			if (Input.GetButtonDown($"Brake_{joystick}"))
+				GameController.Instance.SpawnCar(this);
 		}
 	}
 
