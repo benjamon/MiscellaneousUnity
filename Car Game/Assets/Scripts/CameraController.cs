@@ -44,10 +44,11 @@ public class CameraController : MonoBehaviour
 	{
 		if (body == null)
 		{
-			transform.position += transform.forward * Input.GetAxis($"L_YAxis_{joystick}") +
+			transform.position += -transform.forward * Input.GetAxis($"L_YAxis_{joystick}") +
 				transform.right * Input.GetAxis($"L_XAxis_{joystick}");
 			transform.Rotate(Vector3.up, Input.GetAxis($"R_XAxis_{joystick}"));
-			transform.Rotate(Vector3.Project(transform.forward, Vector3.up), Input.GetAxis($"R_YAxis_{joystick}"));
+			transform.Rotate(Vector3.ProjectOnPlane(transform.forward, Vector3.up), Input.GetAxis($"R_YAxis_{joystick}"));
+			Debug.Log(Input.GetAxis($"R_YAxis_{joystick}"));
 			if (Input.GetButtonDown($"LB_{joystick}"))
 				GameController.Instance.SpawnCar(this);
 		}

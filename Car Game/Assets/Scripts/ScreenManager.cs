@@ -157,6 +157,7 @@ public class ScreenManager
 				r.offsetMax = new Vector2((left) ? (-hw) : 0f, (top) ? (-hh) : 0f);
 				break;
 		}
+		r.SetAsFirstSibling();
 	}
 }
 

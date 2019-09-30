@@ -397,9 +397,9 @@ InputManager:
     positiveButton: joystick 1 button 4
     altNegativeButton: 
     altPositiveButton: 
-    gravity: 10000
-    dead: 0.001
-    sensitivity: 10000
+    gravity: 0
+    dead: 0.3
+    sensitivity: 1
     snap: 0
     invert: 0
     type: 0
@@ -413,14 +413,14 @@ InputManager:
     positiveButton: joystick 2 button 4
     altNegativeButton: 
     altPositiveButton: 
-    gravity: 10000
-    dead: 0.0001
-    sensitivity: 10000
+    gravity: 0
+    dead: 0.3
+    sensitivity: 1
     snap: 0
     invert: 0
     type: 0
     axis: 1
-    joyNum: 4
+    joyNum: 2
   - serializedVersion: 3
     m_Name: LB_3
     descriptiveName: 
@@ -1043,7 +1043,7 @@ InputManager:
     snap: 0
     invert: 0
     type: 2
-    axis: 7
+    axis: 9
     joyNum: 1
   - serializedVersion: 3
     m_Name: TriggersR_2
@@ -1124,7 +1124,7 @@ InputManager:
     invert: 0
     type: 2
     axis: 8
-    joyNum: 4
+    joyNum: 2
   - serializedVersion: 3
     m_Name: TriggersL_3
     descriptiveName: 
@@ -1140,7 +1140,7 @@ InputManager:
     invert: 0
     type: 2
     axis: 8
-    joyNum: 4
+    joyNum: 3
   - serializedVersion: 3
     m_Name: TriggersL_4
     descriptiveName: 

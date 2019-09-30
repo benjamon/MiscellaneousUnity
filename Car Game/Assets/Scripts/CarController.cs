@@ -58,12 +58,13 @@ public class CarController : MonoBehaviour
 		{
 			t.transform.localRotation = Quaternion.identity;
             t.Rotate(Vector3.up, angle);
-			w.SpinDistance += (Input.GetAxis($"TriggersL_{joystick}") + Input.GetAxis($"TriggersR_{joystick}")) * HorsePower * Time.deltaTime;
-		}
+			w.SpinDistance += Input.GetAxis($"TriggersR_{joystick}") * HorsePower * Time.deltaTime;
+			w.SpinDistance -= Input.GetAxis($"TriggersL_{joystick}") * HorsePower * Time.deltaTime;
+		}//Input.GetAxis($"TriggersL_{joystick}")
 		w.SpinDistance = Mathf.Clamp(w.SpinDistance, -TopSpinSpeed, TopSpinSpeed);
 
-        if (Input.GetButton($"LB_{joystick}"))
-        {
+		if (Input.GetButton($"LB_{joystick}") || Input.GetButton($"RB_{joystick}"))
+		{
             w.SpinDistance = TimeScaledMultiply(w.SpinDistance, 1f / BrakeStrength);
 			//body.AddForceAtPosition(forceOnWheel * -pointVelocity.normalized * body.mass * BrakeStrength, t.position);
 		}
@@ -179,7 +180,7 @@ public class CarController : MonoBehaviour
         //Air Tricks
         if (!(fl || fr || bl || br))
 		{
-			if (Input.GetButton($"LB_{joystick}"))
+			if (Input.GetButton($"LB_{joystick}") || Input.GetButton($"RB_{joystick}"))
 			{
                 Vector3 torque = 2f * Input.GetAxis($"L_YAxis_{joystick}") * transform.forward * AirControl +
                      -Input.GetAxis($"L_XAxis_{joystick}") * transform.right * AirControl;
@@ -188,7 +189,7 @@ public class CarController : MonoBehaviour
 			}
 		}
 		
-		wheelAngle = Mathf.Clamp(wheelAngle + TurnSpeed * Time.deltaTime * Input.GetAxis($"R_XAxis_{joystick}"), -MaxTurnAngle, MaxTurnAngle);
+		wheelAngle = Mathf.Clamp(wheelAngle + TurnSpeed * Time.deltaTime * Input.GetAxis($"L_XAxis_{joystick}"), -MaxTurnAngle, MaxTurnAngle);
 
 		//Reset the car
 		if (Input.GetButtonDown($"Back_{joystick}"))
